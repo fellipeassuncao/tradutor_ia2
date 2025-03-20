@@ -1,0 +1,15 @@
+/vendor/
+/inc/tests
+/inc/config.php
+/inc/.env
+/pdf_deepseek.php
+/pdf_meta.php
+/pdf_meta_avancado.php
+/pdf_scielo.php
+/resultado2.php
+/resultadoMetaAvancado.php
+/resultadoMeta.php
+/resultadoDeepSeek.php
+/index2.php
+
+
