@@ -60,104 +60,95 @@ $chat = $client->chat();
                 <div class="card-body">
                     <h5><?= htmlspecialchars($_REQUEST['search']) ?></h5>
                     <p><b>Definição:</b>
-                        <?php
+                    <?php
+                        $yourApiKey = OPENAI_API_KEY;
+                        $client = OpenAI::client($yourApiKey);
 
-                                $yourApiKey = OPENAI_API_KEY;
-                                $client = OpenAI::client($yourApiKey);
+                        try {
+                            $result = $client->chat()->create([
+                                'model' => 'gpt-4o-mini',
+                                'messages' => [
+                                    ['role' => 'user', 'content' => 'Defina o termo:' . $_REQUEST['search'] . 'como se fosse um dicionário da área médica sem incluir titulos e formatações como ** ou ##. Retorne apenas a definição.'],
+                                ],
+                            ]);
 
-                                try {
-                                    $result = $client->chat()->create([
-                                        'model' => 'gpt-4o-mini',
-                                        'messages' => [
-                                            ['role' => 'user', 'content' => 'Defina o termo:' . $_REQUEST['search'] . 'como se fosse um dicionário da área médica sem incluir titulos e formatações como ** ou ##. Retorne apenas a definição.'],
-                                        ],
-                                    ]);
-
-                                    echo $result->choices[0]->message->content;
-                                } catch (\Exception $e) {
-                                    echo "Erro ao processar a solicitação: " . $e->getMessage();
-                                }        
-                                ?>
+                            echo $result->choices[0]->message->content;
+                        } catch (\Exception $e) {
+                            echo "Erro ao processar a solicitação: " . $e->getMessage();
+                        }        
+                    ?>
                     </p>
                     <p><b>Traduções:</b>
 
                     <?php
-                                try{
-                                    $result2 = $client->chat()->create([
-                                        'model' => 'gpt-4o-mini',
-                                        'messages' => [
-                                            ['role' => 'user', 'content' => 'Liste as traduções em todos os idiomas que você conhece do termo em uma lista separada por <li><b>Lingua: </b>Definição</li>:' . $_REQUEST['search'] . '. Não é preciso incluir uma definição do termo. As traduções serão usadas em uma string de busca em bases de dados de pesquisa de artigos. Retorne apenas a lista.'],
-                                        ],
-                                    ]);
-
-                                    echo $result2->choices[0]->message->content;
-                                } catch (\Exception $e) {
-                                    echo "Erro ao processar a solicitação: " . $e->getMessage();
-                                }        
-                                ?>
-                    </p>
-                    <?php
-                                
-                                $result3 = $client->chat()->create([
-                                    'model' => 'gpt-4o-mini',
-                                    'messages' => [
-                                        ['role' => 'user', 'content' => 'Liste as traduções em todos os idiomas que você conhece do termo ' . $_REQUEST['search'] . ' em uma lista separada por |, sem incluir o idioma, somente a lista dos resultados. Não é preciso incluir uma definição. Responda somente a lista'],
+                        try{
+                            $result2 = $client->chat()->create([
+                                'model' => 'gpt-4o-mini',
+                                'messages' => [
+                                    ['role' => 'user', 'content' => 'Liste as traduções em todos os idiomas que você conhece do termo ' . $_REQUEST['search'] . ' em uma lista separada por |, sem incluir o idioma, somente a lista dos resultados. Não é preciso incluir uma definição. Responda somente a lista'],
                                     ],
-                                ]);
-                                $traducoesOpenAI = explode('|', $result3->choices[0]->message->content);
+                            ]);
 
-                                // Consulta expandida para traduções
-                                $consultaPorTraducoes = implode(" OR ", array_unique($traducoesOpenAI));
-                                echo "<p><strong>Consulta expandida: </strong> $consultaPorTraducoes</p>";
-                                
-                                // Buscar sinônimos via OpenAI
-                                $resultSinonimos = $client->chat()->create([
-                                    'model' => 'gpt-4o-mini',
-                                    'messages' => [
-                                        [
-                                            'role' => 'user',
-                                            'content' => 'Liste sinônimos e variações para o termo "' . $_REQUEST['search'] . '" em uma lista separada por |, sem incluir definições. Responda somente a lista.'
-                                        ],
-                                    ],
-                                ]);
+                            echo $result2->choices[0]->message->content;
+                        } catch (\Exception $e) {
+                            echo "Erro ao processar a solicitação: " . $e->getMessage();
+                        }        
+                       
 
-                                // Processar a resposta
-                                $sinonimosOpenAI = explode('|', $resultSinonimos->choices[0]->message->content);
-                                $sinonimosOpenAI = array_map('trim', $sinonimosOpenAI); // Remover espaços extras
-                                $sinonimosOpenAI = array_unique($sinonimosOpenAI); // Remover duplicados
+                        $traducoesOpenAI = explode('|', $result2->choices[0]->message->content);
 
-                                // Consulta expandida para sinônimos
-                                $consultaPorSinonimos = implode(" OR ", $sinonimosOpenAI);
-                                echo "<p><strong>Consulta por sinônimos: </strong> $consultaPorSinonimos</p>";
+                        // Consulta expandida para traduções
+                        $consultaPorTraducoes = implode(" OR ", array_unique($traducoesOpenAI));
+                        echo "<p><strong>Consulta expandida: </strong> $consultaPorTraducoes</p>";
+                        
+                        // Buscar sinônimos via OpenAI
+                        $resultSinonimos = $client->chat()->create([
+                            'model' => 'gpt-4o-mini',
+                            'messages' => [
+                                [
+                                    'role' => 'user',
+                                    'content' => 'Liste sinônimos e variações para o termo "' . $_REQUEST['search'] . '" em uma lista separada por |, sem incluir definições. Responda somente a lista.'
+                                ],
+                            ],
+                        ]);
 
-                                // Exibir sinônimos em lista
-                                /*echo "<p><strong>Sinônimos:</strong></p>";
-                                echo "<ul>";
-                                foreach ($sinonimosOpenAI as $sinonimo) {
-                                    echo "<li>$sinonimo</li>";
-                                }
-                                echo "</ul>";
-                                */     
-            
-                                // Gera links para todas as bases de dados
-                                echo '<span class="small text-body-secondary">Pesquisar nas seguintes fontes por idioma: </span>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://search.scielo.org/?q=' . urlencode(implode(" OR ", $traducoesOpenAI)) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . urlencode(implode(' OR ', $traducoesOpenAI)) . '" target="_blank">Pubmed</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . urlencode(implode(' OR ', $traducoesOpenAI)) . '" target="_blank">Scopus</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=&quot;' . urlencode(implode('&quot; OR &quot;', $traducoesOpenAI)) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://data.mendeley.com/research-data/?search=' . urlencode(implode(' OR ', $traducoesOpenAI)) . '" target="_blank">Mendeley Data</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . urlencode(implode(' OR ', $traducoesOpenAI)) . '" target="_blank">Zenodo</a>';
-                                echo '<br><br>'; 
-                                // Links para bases de dados com sinônimos
-                                echo '<span class="small text-body-secondary">Pesquisar nas seguintes fontes por sinônimos: </span>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://search.scielo.org/?q=' . urlencode($consultaPorSinonimos) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . urlencode($consultaPorSinonimos) . '" target="_blank">Pubmed</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . urlencode($consultaPorSinonimos) . '" target="_blank">Scopus</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=&quot;' . urlencode($consultaPorSinonimos) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://data.mendeley.com/research-data/?search=' . urlencode($consultaPorSinonimos) . '" target="_blank">Mendeley Data</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . urlencode($consultaPorSinonimos) . '" target="_blank">Zenodo</a>';
-                                
-                                ?>               
+                        // Processar a resposta
+                        $sinonimosOpenAI = explode('|', $resultSinonimos->choices[0]->message->content);
+                        $sinonimosOpenAI = array_map('trim', $sinonimosOpenAI); // Remover espaços extras
+                        $sinonimosOpenAI = array_unique($sinonimosOpenAI); // Remover duplicados
+
+                        // Consulta expandida para sinônimos
+                        $consultaPorSinonimos = implode(" OR ", $sinonimosOpenAI);
+                        echo "<p><strong>Consulta por sinônimos: </strong> $consultaPorSinonimos</p>";
+
+                        // Exibir sinônimos em lista
+                        /*echo "<p><strong>Sinônimos:</strong></p>";
+                        echo "<ul>";
+                        foreach ($sinonimosOpenAI as $sinonimo) {
+                            echo "<li>$sinonimo</li>";
+                        }
+                        echo "</ul>";
+                        */     
+    
+                        // Gera links para todas as bases de dados
+                        echo '<span class="small text-body-secondary">Pesquisar por idioma: </span>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://search.scielo.org/?q=' . urlencode(implode(" OR ", $traducoesOpenAI)) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . urlencode(implode(' OR ', $traducoesOpenAI)) . '" target="_blank">Pubmed</a>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . urlencode(implode(' OR ', $traducoesOpenAI)) . '" target="_blank">Scopus</a>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=&quot;' . urlencode(implode('&quot; OR &quot;', $traducoesOpenAI)) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://data.mendeley.com/research-data/?search=' . urlencode(implode(' OR ', $traducoesOpenAI)) . '" target="_blank">Mendeley Data</a>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . urlencode(implode(' OR ', $traducoesOpenAI)) . '" target="_blank">Zenodo</a>';
+                        echo '<br><br>'; 
+                        // Links para bases de dados com sinônimos
+                        echo '<span class="small text-body-secondary">Pesquisar por sinônimos: </span>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://search.scielo.org/?q=' . urlencode($consultaPorSinonimos) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . urlencode($consultaPorSinonimos) . '" target="_blank">Pubmed</a>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . urlencode($consultaPorSinonimos) . '" target="_blank">Scopus</a>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=&quot;' . urlencode($consultaPorSinonimos) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://data.mendeley.com/research-data/?search=' . urlencode($consultaPorSinonimos) . '" target="_blank">Mendeley Data</a>';
+                        echo '<a class="btn btn-primary btn-sm me-2" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . urlencode($consultaPorSinonimos) . '" target="_blank">Zenodo</a>';
+                            
+                    ?>               
                 </div>
             </div>
 
@@ -214,7 +205,7 @@ $chat = $client->chat();
                                     'messages' => [['role' => 'user', 'content' => 'Liste as traduções em todos os idiomas que você conhece do termo ' . $_REQUEST['search'] . ' em uma lista separada por |, sem incluir o idioma, somente a lista dos resultados. Não é preciso incluir uma definição. Responda somente a lista']],
                                 ]);
                                 $traducoes = explode('|', $chatResponse3->message->content);
-                                echo '<span class="small text-body-secondary">Pesquisar nas seguintes fontes por idioma:</span>';
+                                echo '<span class="small text-body-secondary">Pesquisar por idioma:</span>';
                                 echo '<a href="https://search.scielo.org/?q=' . implode(" OR ", $traducoes) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> - ';
                                 echo '<a href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' OR ', $traducoes) . '" target="_blank">Pubmed</a> - ';
                                 echo '<a href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' OR ', $traducoes) . '" target="_blank">Scopus</a> - ';
@@ -234,39 +225,38 @@ $chat = $client->chat();
                         echo "<p class='text-danger'><strong>Erro:</strong> $mensagem</p>";
                     }
 
-                    // Verifica se o termo foi informado
-                    if (!isset($_REQUEST['search']) || empty(trim($_REQUEST['search']))) {
-                        exibirErro("Termo não informado.");
-                        exit;
-                    }
-
-                    // Sanitiza o termo de busca
-                    $termo = htmlspecialchars(trim($_REQUEST['search']));
-
-                    // Verifica se a classe UMLSMeSHService existe
-                    if (!class_exists('UMLSMeSHService')) {
-                        exibirErro("Classe UMLSMeSHService não encontrada.");
-                        exit;
-                    }
-
-                    // Instancia a classe com a chave da API
-                    $umls = new UMLSMeSHService(MESH_API_KEY);
-
-                    // Busca o CUI do termo fornecido
                     try {
+                        // Verifica se o termo foi informado
+                        if (!isset($_REQUEST['search']) || empty(trim($_REQUEST['search']))) {
+                            exibirErro("Termo não informado.");
+                            exit;
+                        }
+
+                        // Sanitiza o termo de busca
+                        $termo = htmlspecialchars(trim($_REQUEST['search']));
+
+                        // Verifica se a classe UMLSMeSHService existe
+                        if (!class_exists('UMLSMeSHService')) {
+                            exibirErro("Classe UMLSMeSHService não encontrada.");
+                            exit;
+                        }
+
+                        // Instancia a classe com a chave da API
+                        $umls = new UMLSMeSHService(MESH_API_KEY);
+
+                        // Busca o CUI do termo fornecido
                         $cui = $umls->buscarCUI($termo);
                         if ($cui) {
                             // Exibe o termo e o CUI
                             echo "<h5>$termo</h5>";
                             echo "<p><strong>CUI encontrado:</strong> $cui</p>";
 
-                            // Exibe as definições
+                            // Processar definições
                             $definicoes = $umls->buscarDefinicoes($cui);
                             if (!empty($definicoes)) {
                                 echo "<p><strong>Definições:</strong></p>";
                                 echo "<ul>";
                                 foreach ($definicoes as $definicao) {
-                                    // O idioma já vem formatado dentro da string no array retornado pela função
                                     echo "<li>$definicao</li>";
                                 }
                                 echo "</ul>";
@@ -274,7 +264,7 @@ $chat = $client->chat();
                                 echo "<p>Nenhuma definição encontrada.</p>";
                             }
 
-                            // Exibe as traduções
+                            // Processar traduções
                             $traducoes = $umls->buscarTraducoes($cui);
                             if (!empty($traducoes)) {
                                 echo "<p><strong>Traduções:</strong></p>";
@@ -286,28 +276,32 @@ $chat = $client->chat();
                             } else {
                                 echo "<p>Nenhuma tradução encontrada.</p>";
                             }
+                            
+                            // Processar sinônimos
+                            $sinonimos = $umls->buscarSinonimos($cui);
+                            $sinonimosAchatados = $umls->achatarArray($sinonimos);
+                            $sinonimosUnicos = array_unique($sinonimosAchatados);
 
-                            // Consulta expandida
-                            $consultaExpandida = array_merge([$termo], $sinonimos ?? []);
-                            if (!empty($traducoes)) {
-                                foreach ($traducoes as $traducao) {
-                                    $consultaExpandida = array_merge($consultaExpandida, $traducao);
-                                }
+                            // Exibir consulta por sinônimos
+                            if (!empty($sinonimosUnicos)) {
+                                echo "<p><strong>Consulta por sinônimos:</strong> " . implode(" OR ", $sinonimosUnicos) . "</p>";
                             }
+                            // Construir consulta expandida
+                            $consultaExpandida = [$termo];
+                            $consultaExpandida = array_merge($consultaExpandida, $sinonimosUnicos);
+
+                            if (!empty($traducoes)) {
+                                $traducoesAchatadas = $umls->achatarArray($traducoes);
+                                $consultaExpandida = array_merge($consultaExpandida, $traducoesAchatadas);
+                            }
+
+                            // Exibir consulta expandida
                             $consultaExpandida = implode(" OR ", array_unique($consultaExpandida));
                             echo "<p><strong>Consulta expandida:</strong> $consultaExpandida</p>";
 
-                            // Exibe os sinônimos
-                            $sinonimos = $umls->buscarSinonimos($cui);
-                            if (!empty($sinonimos)) {
-                                echo "<p><strong>Consulta por sinônimos:</strong> " . implode(" OR ", $sinonimos) . "</p>";
-                            } else {
-                                echo "<p>Nenhum sinônimo encontrado.</p>";
-                            }
-                            
                             // Links para pesquisa em bases de dados por idioma
                             if (!empty($consultaExpandida)){
-                                echo '<span class="small text-body-secondary">Pesquisar nas seguintes fontes por idioma:</span>';
+                                echo '<span class="small text-body-secondary">Pesquisar por idioma:</span>';
                                 echo '<a class="btn btn-primary btn-sm me-2" href="https://search.scielo.org/?q=' . urlencode($consultaExpandida) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a>';
                                 echo '<a class="btn btn-primary btn-sm me-2" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . urlencode($consultaExpandida) . '" target="_blank">Pubmed</a>';
                                 echo '<a class="btn btn-primary btn-sm me-2" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . urlencode($consultaExpandida) . '" target="_blank">Scopus</a>';
@@ -318,30 +312,29 @@ $chat = $client->chat();
                         } else {
                             exibirErro("Termo não encontrado no UMLS/MeSH.");
                         }
-                        
+
                             // Links para pesquisa em bases de dados por sinônimos
-                            if (!empty($sinonimos)) {
-                                $consultaPorSinonimos = implode(" OR ", array_unique($sinonimos));
-                                echo '<span class="small text-body-secondary">Pesquisar nas seguintes fontes por sinônimos:</span>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://search.scielo.org/?q=' . urlencode($consultaPorSinonimos) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . urlencode($consultaPorSinonimos) . '" target="_blank">Pubmed</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . urlencode($consultaPorSinonimos) . '" target="_blank">Scopus</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=&quot;' . urlencode($consultaPorSinonimos) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://data.mendeley.com/research-data/?search=' . urlencode($consultaPorSinonimos) . '" target="_blank">Mendeley Data</a>';
-                                echo '<a class="btn btn-primary btn-sm me-2" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . urlencode($consultaPorSinonimos) . '" target="_blank">Zenodo</a>';
+                            if (!empty($sinonimosUnicos)) {
+                                $consultaSinonimos = implode(" OR ", $sinonimosUnicos);
+                                echo '<span class="small text-body-secondary">Pesquisar por sinônimos:</span>';
+                                echo '<a class="btn btn-primary btn-sm me-2" href="https://search.scielo.org/?q=' . urlencode($consultaSinonimos) . '" target="_blank">Scielo</a>';
+                                echo '<a class="btn btn-primary btn-sm me-2" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . urlencode($consultaSinonimos) . '" target="_blank">Pubmed</a>';
+                                echo '<a class="btn btn-primary btn-sm me-2" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . urlencode($consultaSinonimos) . '" target="_blank">Scopus</a>';
+                                echo '<a class="btn btn-primary btn-sm me-2" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=&quot;' . urlencode($consultaSinonimos) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a>';
+                                echo '<a class="btn btn-primary btn-sm me-2" href="https://data.mendeley.com/research-data/?search=' . urlencode($consultaSinonimos) . '" target="_blank">Mendeley Data</a>';
+                                echo '<a class="btn btn-primary btn-sm me-2" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . urlencode($consultaSinonimos) . '" target="_blank">Zenodo</a>';
                             }
+
                         } else {
                             exibirErro("Termo não encontrado no UMLS/MeSH.");
                         }
                     } catch (\Exception $e) {
                         exibirErro("Erro ao processar a solicitação: " . $e->getMessage());
                     }
-                  
                     ?>
-                 
                 </div>
             </div>
-            
+
             <?php if ($_REQUEST['area'] == 'Medicina'): ?>
             <h3>DECS Exato</h3>
             <?php DadosExternos::exatoDECS($_REQUEST['search']); ?>

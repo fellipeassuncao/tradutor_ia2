@@ -26,8 +26,20 @@
 * Infecção Urinária: https://uts-ws.nlm.nih.gov/rest/content/current/CUI/C0042029/atoms?termType=MH&ttys=MH&apiKey=e0043acd-f023-4680-8a7c-60fe6e0e1e2b
 * Coração: https://uts-ws.nlm.nih.gov/rest/content/current/CUI/C0018787/atoms?termType=MH&ttys=MH&apiKey=e0043acd-f023-4680-8a7c-60fe6e0e1e2b
 
-> *Definições:* $url = "{$this->baseUrl}/content/current/CUI/{$cui}/definitions?apiKey={$this->MESH_API_KEY}";
+> *Definições:* 
+* $url = "{$this->baseUrl}/content/current/CUI/{$cui}/definitions?apiKey={$this->MESH_API_KEY}";
 * Infecção Urinária: https://uts-ws.nlm.nih.gov/rest/content/current/CUI/C0042029/definitions?apiKey=e0043acd-f023-4680-8a7c-60fe6e0e1e2b
 * Coração: https://uts-ws.nlm.nih.gov/rest/content/current/CUI/C0018787/definitions?apiKey=e0043acd-f023-4680-8a7c-60fe6e0e1e2b
-> *Sinônimos:* $url = "{$this->baseUrl}/content/current/CUI/{$cui}/atoms?ttys=MH&apiKey={$this->MESH_API_KEY}";
+
+> *Sinônimos:* 
+* $url = "{$this->baseUrl}/content/current/CUI/{$cui}/atoms?ttys=ET&apiKey={$this->MESH_API_KEY}";
+* Epitélio: https://uts-ws.nlm.nih.gov/rest/content/current/CUI/C0014609/atoms?ttys=ET&apiKey=e0043acd-f023-4680-8a7c-60fe6e0e1e2b
+* Infecção Urinária: https://uts-ws.nlm.nih.gov/rest/content/current/CUI/C0042029/atoms?ttys=ET&apiKey=e0043acd-f023-4680-8a7c-60fe6e0e1e2b
+
+>> *Considerações sobre sinônimos e outros termos:*
+>* ET (Entry Term): Sinônimos
+>* SY (Synonym): Termos equivalentes
+>* XM (Cross Mapping): Mapeamentos cruzados entre diferentes vocabulários
+>* PREF (Preferred Term): Termo preferido
+
 

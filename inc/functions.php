@@ -13,6 +13,21 @@ class UMLSMeSHService {
     }
 
     /**
+     * Função para achatar um array (quando contém sub-arrays)
+     */
+    public function achatarArray($array) {
+        $resultado = [];
+        foreach ($array as $elemento) {
+            if (is_array($elemento)) {
+                $resultado = array_merge($resultado, $this->achatarArray($elemento)); // Usa o método da própria classe
+            } else {
+                $resultado[] = (string) $elemento;
+            }
+        }
+        return $resultado;
+    }
+
+    /**
      * Busca o CUI do termo médico no UMLS/MeSH.
      */
     public function buscarCUI($termo) {
@@ -36,7 +51,6 @@ class UMLSMeSHService {
         // Mapeamento dos códigos para os nomes dos idiomas
         $idiomas = [
             "MSH"    => "Inglês",
-            "MSHENG" => "Inglês",
             "MSHSPA" => "Espanhol",
             "MSHFRE" => "Francês",
             "MSHGER" => "Alemão",
@@ -56,6 +70,7 @@ class UMLSMeSHService {
             "MSHNOR" => "Norueguês",
             "MSHSWE" => "Sueco",
             "MSHGRE" => "Grego",
+            "MSHSCR" => "Croata"
         ];
 
         $traducoes = [];
@@ -76,10 +91,146 @@ class UMLSMeSHService {
         return $traducoes;
     }
     
+    /**
+     * Obtém as definições do termo no MeSH, filtradas por idiomas escolhidos.
+     */
+    public function buscarDefinicoes($cui) {
+        // Mapeamento de rootSource para nomes de idiomas legíveis
+        $idiomas = [
+            "MSH"    => "Inglês",
+            "MSHSPA" => "Espanhol",
+            "MSHFRE" => "Francês",
+            "MSHGER" => "Alemão",
+            "MSHITA" => "Italiano",
+            "MSHDUT" => "Holandês",
+            "MSHPOR" => "Português",
+            "MSHRUS" => "Russo",
+            "MSHCHI" => "Chinês",
+            "MSHJPN" => "Japonês",
+            "MSHKOR" => "Coreano",
+            "MSHCZE" => "Tcheco",
+            "MSHPOL" => "Polonês",
+            "MSHTUR" => "Turco",
+            "MSHDAN" => "Dinamarquês",
+            "MSHFIN" => "Finlandês",
+            "MSHHUN" => "Húngaro",
+            "MSHNOR" => "Norueguês",
+            "MSHSWE" => "Sueco",
+            "MSHGRE" => "Grego",
+            "MSHSCR" => "Croata"
+        ];
+
+        // Defina quais idiomas devem aparecer no resultado
+        $idiomasPermitidos = [
+            "Inglês",
+            "Espanhol",
+            "Francês",
+            "Alemão",
+            "Italiano",
+            "Holandês",
+            "Português",
+            "Russo",
+            "Chinês",
+            "Japonês",
+            "Coreano",
+            "Tcheco",
+            "Polonês",
+            "Turco",
+            "Dinamarquês",
+            "Finlandês",
+            "Húngaro",
+            "Norueguês",
+            "Sueco",
+            "Grego",
+            "Croata"
+        ];
+
+        $url = "{$this->baseUrl}/content/current/CUI/{$cui}/definitions?apiKey={$this->MESH_API_KEY}";
+        $resultado = $this->fazerRequisicao($url);
+
+        $definicoes = [];
+
+        if (!empty($resultado['result'])) {
+            foreach ($resultado['result'] as $index => $item) {
+                if (!empty($item['value']) && !empty($item['rootSource'])) {
+                    $rootSource = $item['rootSource'];
+                    $idioma = $idiomas[$rootSource] ?? $rootSource; // Usa nome amigável ou rootSource como fallback
+                    
+                    // Só adiciona se estiver na lista permitida
+                    if (in_array($idioma, $idiomasPermitidos)) {
+                        $definicoes[] = "<strong>{$idioma}: </strong>" . $item['value']; 
+                    }
+                }
+            }
+        }
+
+        return $definicoes;
+    }
+
+    public function buscarSinonimos($cui) {
+        // Mapeamento dos códigos para os nomes dos idiomas
+        $idiomas = [
+            "MSH"    => "Inglês",
+            "MSHSPA" => "Espanhol",
+            "MSHFRE" => "Francês",
+            "MSHGER" => "Alemão",
+            "MSHITA" => "Italiano",
+            "MSHDUT" => "Holandês",
+            "MSHPOR" => "Português",
+            "MSHRUS" => "Russo",
+            "MSHCHI" => "Chinês",
+            "MSHJPN" => "Japonês",
+            "MSHKOR" => "Coreano",
+            "MSHCZE" => "Tcheco",
+            "MSHPOL" => "Polonês",
+            "MSHTUR" => "Turco",
+            "MSHDAN" => "Dinamarquês",
+            "MSHFIN" => "Finlandês",
+            "MSHHUN" => "Húngaro",
+            "MSHNOR" => "Norueguês",
+            "MSHSWE" => "Sueco",
+            "MSHGRE" => "Grego",
+            "MSHSCR" => "Croata"
+        ];
+
+        $sinonimos = [];
+
+        foreach ($idiomas as $codigoIdioma => $nomeIdioma) {
+            $url = "{$this->baseUrl}/content/current/CUI/{$cui}/atoms?sabs={$codigoIdioma}&termType=MH&ttys=ET&apiKey={$this->MESH_API_KEY}";
+            $resultado = $this->fazerRequisicao($url);
+
+            if (!empty($resultado['result'])) {
+                foreach ($resultado['result'] as $item) {
+                    if (!empty($item['name'])) {
+                        $sinonimos[$nomeIdioma][] = $item['name']; // Usa o nome do idioma em vez do código
+                    }
+                }
+            }
+        }
+
+        return $sinonimos;
+    }
+
+    /**
+     * Função auxiliar para fazer requisições HTTP e retornar os dados decodificados.
+     */
+    private function fazerRequisicao($url) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        $resposta = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($resposta, true);
+    }
+
+    /*
     public function buscarTraducoes1($cui) {
 
         $idiomas = [
-            "MSHENG", // Inglês
+            "MSH",    // Inglês
             "MSHSPA", // Espanhol
             "MSHFRE", // Francês
             "MSHGER", // Alemão
@@ -99,6 +250,7 @@ class UMLSMeSHService {
             "MSHNOR", // Norueguês
             "MSHSWE", // Sueco
             "MSHGRE", // Grego
+            "MSHSCR"  // Croata
         ];
         
         $traducoes = [];
@@ -136,89 +288,12 @@ class UMLSMeSHService {
         }
         return $definicoes;
     }
-    **/
-    
-    /**
-     * Obtém as definições do termo no MeSH, filtradas por idiomas escolhidos.
-     */
-    public function buscarDefinicoes($cui) {
-        // Mapeamento de rootSource para nomes de idiomas legíveis
-        $idiomas = [
-            "MSH"    => "Inglês",
-            "MSHENG" => "Inglês 2",
-            "MSHSPA" => "Espanhol",
-            "MSHFRE" => "Francês",
-            "MSHGER" => "Alemão",
-            "MSHITA" => "Italiano",
-            "MSHDUT" => "Holandês",
-            "MSHPOR" => "Português",
-            "MSHRUS" => "Russo",
-            "MSHCHI" => "Chinês",
-            "MSHJPN" => "Japonês",
-            "MSHKOR" => "Coreano",
-            "MSHCZE" => "Tcheco",
-            "MSHPOL" => "Polonês",
-            "MSHTUR" => "Turco",
-            "MSHDAN" => "Dinamarquês",
-            "MSHFIN" => "Finlandês",
-            "MSHHUN" => "Húngaro",
-            "MSHNOR" => "Norueguês",
-            "MSHSWE" => "Sueco",
-            "MSHGRE" => "Grego",
-        ];
-
-        // Defina quais idiomas devem aparecer no resultado
-        $idiomasPermitidos = [
-            "Inglês",
-            "Inglês 2",
-            "Espanhol",
-            "Francês",
-            "Alemão",
-            "Italiano",
-            "Holandês",
-            "Português",
-            "Russo",
-            "Chinês",
-            "Japonês",
-            "Coreano",
-            "Tcheco",
-            "Polonês",
-            "Turco",
-            "Dinamarquês",
-            "Finlandês",
-            "Húngaro",
-            "Norueguês",
-            "Sueco",
-            "Grego"
-        ];
-
-        $url = "{$this->baseUrl}/content/current/CUI/{$cui}/definitions?apiKey={$this->MESH_API_KEY}";
-        $resultado = $this->fazerRequisicao($url);
-
-        $definicoes = [];
-
-        if (!empty($resultado['result'])) {
-            foreach ($resultado['result'] as $index => $item) {
-                if (!empty($item['value']) && !empty($item['rootSource'])) {
-                    $rootSource = $item['rootSource'];
-                    $idioma = $idiomas[$rootSource] ?? $rootSource; // Usa nome amigável ou rootSource como fallback
-                    
-                    // Só adiciona se estiver na lista permitida
-                    if (in_array($idioma, $idiomasPermitidos)) {
-                        $definicoes[] = "<strong>{$idioma}: </strong>" . $item['value']; 
-                    }
-                }
-            }
-        }
-
-        return $definicoes;
-    }
-   
-    /**
+        /**
      * Obtém os sinônimos do termo no MeSH.
      */
-    public function buscarSinonimos($cui) {
-        $url = "{$this->baseUrl}/content/current/CUI/{$cui}/atoms?ttys=MH&apiKey={$this->MESH_API_KEY}";
+     /*
+    public function buscarSinonimos1($cui) {
+        $url = "{$this->baseUrl}/content/current/CUI/{$cui}/atoms?ttys=ET&apiKey={$this->MESH_API_KEY}";
         $resultado = $this->fazerRequisicao($url);
     
         $sinonimos = [];
@@ -230,22 +305,8 @@ class UMLSMeSHService {
             }
         }
         return array_unique($sinonimos);
-    } 
-
-    /**
-     * Função auxiliar para fazer requisições HTTP e retornar os dados decodificados.
-     */
-    private function fazerRequisicao($url) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-        $resposta = curl_exec($ch);
-        curl_close($ch);
-
-        return json_decode($resposta, true);
-    }
+    }     
+    **/
 }
 
 class DadosExternos
