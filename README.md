@@ -102,3 +102,6 @@ curl "https://id.nlm.nih.gov/mesh/lookup/descriptor?label=diabetes&match=exact&l
 ```
 
 🔗 [Testar no navegador](https://id.nlm.nih.gov/mesh/lookup/descriptor?label=diabetes&match=exact&lang=pt)
+
+
+

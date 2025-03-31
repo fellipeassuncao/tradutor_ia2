@@ -53,24 +53,7 @@ class UMLSMeSHService {
             "MSH"    => "Inglês",
             "MSHSPA" => "Espanhol",
             "MSHFRE" => "Francês",
-            "MSHGER" => "Alemão",
-            "MSHITA" => "Italiano",
-            "MSHDUT" => "Holandês",
             "MSHPOR" => "Português",
-            "MSHRUS" => "Russo",
-            "MSHCHI" => "Chinês",
-            "MSHJPN" => "Japonês",
-            "MSHKOR" => "Coreano",
-            "MSHCZE" => "Tcheco",
-            "MSHPOL" => "Polonês",
-            "MSHTUR" => "Turco",
-            "MSHDAN" => "Dinamarquês",
-            "MSHFIN" => "Finlandês",
-            "MSHHUN" => "Húngaro",
-            "MSHNOR" => "Norueguês",
-            "MSHSWE" => "Sueco",
-            "MSHGRE" => "Grego",
-            "MSHSCR" => "Croata"
         ];
 
         $traducoes = [];
@@ -100,24 +83,7 @@ class UMLSMeSHService {
             "MSH"    => "Inglês",
             "MSHSPA" => "Espanhol",
             "MSHFRE" => "Francês",
-            "MSHGER" => "Alemão",
-            "MSHITA" => "Italiano",
-            "MSHDUT" => "Holandês",
             "MSHPOR" => "Português",
-            "MSHRUS" => "Russo",
-            "MSHCHI" => "Chinês",
-            "MSHJPN" => "Japonês",
-            "MSHKOR" => "Coreano",
-            "MSHCZE" => "Tcheco",
-            "MSHPOL" => "Polonês",
-            "MSHTUR" => "Turco",
-            "MSHDAN" => "Dinamarquês",
-            "MSHFIN" => "Finlandês",
-            "MSHHUN" => "Húngaro",
-            "MSHNOR" => "Norueguês",
-            "MSHSWE" => "Sueco",
-            "MSHGRE" => "Grego",
-            "MSHSCR" => "Croata"
         ];
 
         // Defina quais idiomas devem aparecer no resultado
@@ -125,24 +91,7 @@ class UMLSMeSHService {
             "Inglês",
             "Espanhol",
             "Francês",
-            "Alemão",
-            "Italiano",
-            "Holandês",
             "Português",
-            "Russo",
-            "Chinês",
-            "Japonês",
-            "Coreano",
-            "Tcheco",
-            "Polonês",
-            "Turco",
-            "Dinamarquês",
-            "Finlandês",
-            "Húngaro",
-            "Norueguês",
-            "Sueco",
-            "Grego",
-            "Croata"
         ];
 
         $url = "{$this->baseUrl}/content/current/CUI/{$cui}/definitions?apiKey={$this->MESH_API_KEY}";
@@ -173,24 +122,7 @@ class UMLSMeSHService {
             "MSH"    => "Inglês",
             "MSHSPA" => "Espanhol",
             "MSHFRE" => "Francês",
-            "MSHGER" => "Alemão",
-            "MSHITA" => "Italiano",
-            "MSHDUT" => "Holandês",
             "MSHPOR" => "Português",
-            "MSHRUS" => "Russo",
-            "MSHCHI" => "Chinês",
-            "MSHJPN" => "Japonês",
-            "MSHKOR" => "Coreano",
-            "MSHCZE" => "Tcheco",
-            "MSHPOL" => "Polonês",
-            "MSHTUR" => "Turco",
-            "MSHDAN" => "Dinamarquês",
-            "MSHFIN" => "Finlandês",
-            "MSHHUN" => "Húngaro",
-            "MSHNOR" => "Norueguês",
-            "MSHSWE" => "Sueco",
-            "MSHGRE" => "Grego",
-            "MSHSCR" => "Croata"
         ];
 
         $sinonimos = [];
@@ -424,7 +356,7 @@ class DadosExternos
                     echo '<p class="card-text"><b>Definição:</b> ' . $data['decsws_response']['record_list']['record']['definition']['occ']['@attributes']['n'] . '<br/>';
 
                     //echo "<pre>" . print_r($record['record_list']['record']['synonym_list'], true) . "</pre>";
-                    echo '<b>Consulta expandida:</b> ' . implode(' OR ', $data['decsws_response']['record_list']['record']['descriptor_list']['descriptor']) . '<br/>';
+                    echo '<b>Consulta por traduções:</b> ' . implode(' OR ', $data['decsws_response']['record_list']['record']['descriptor_list']['descriptor']) . '<br/>';
                     if (count($data['decsws_response']['record_list']['record']['synonym_list']) > 0) {
                         if (is_array($data['decsws_response']['record_list']['record']['synonym_list']['synonym'])) {
                             $sinonimoArray[] = '(' . implode(' OR ', $data['decsws_response']['record_list']['record']['synonym_list']['synonym']) . ')';
@@ -435,7 +367,7 @@ class DadosExternos
                         }
                     }
                     if (is_array($data['decsws_response']['record_list']['record']['synonym_list']['synonym'])) {
-                        echo '<b>Consulta por sinônimos:</b> ' . implode(' OR ', $sinonimoArray) . '</p>';
+                        echo '<b>Consulta por termos relacionados:</b> ' . implode(' OR ', $sinonimoArray) . '</p>';
                     }
 
 
@@ -466,33 +398,33 @@ class DadosExternos
         //echo "<pre>" . print_r($sinonimo_array, true) . "</pre>";
 
         echo '<p class="card-text"></p>';
-        echo '<p class="card-text"><small class="text-body-secondary">Pesquisar nas seguintes fontes por idioma: 
+        echo '<p class="card-text"><small class="text-body-secondary">Pesquisar por traduções: 
         <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' AND ', $consultaArray) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
         <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' AND ', $consultaArray) . '" target="_blank">Pubmed</a> 
         <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' AND ', $consultaArray) . '" target="_blank">Scopus</a> 
-        <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=&quot;' . implode('&quot; AND &quot;', $consultaArray) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
+        <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=' . implode(' AND ', $consultaArray) . ';" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
         <a class="btn btn-primary btn-sm" href="https://data.mendeley.com/research-data/?search=' . implode(' AND ', $consultaArray) . '" target="_blank">Mendeley Data</a>
         <a class="btn btn-primary btn-sm" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . implode(' AND ', $consultaArray) . '" target="_blank">Zenodo</a>
 
         </small></br>';
         if (count($data['decsws_response']['record_list']['record']['synonym_list']) > 0) {
             if (is_array($data['decsws_response']['record_list']['record']['synonym_list']['synonym'])) {
-                echo '<small class="text-body-secondary">Pesquisar nas seguintes fontes por sinônimo: 
+                echo '<small class="text-body-secondary">Pesquisar por termos relacioandos: 
                 <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' AND ', $sinonimoArray) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
                 <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' AND ', $sinonimoArray) . '" target="_blank">Pubmed</a> 
                 <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' AND ', $sinonimoArray) . '" target="_blank">Scopus</a> 
-                <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=&quot;' . implode('&quot; AND &quot;', $sinonimoArray) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
+                <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=' . implode(' AND ', $sinonimoArray) . '" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
                 <a class="btn btn-primary btn-sm" href="https://data.mendeley.com/research-data/?search=' . implode(' AND ', $sinonimoArray) . '" target="_blank">Mendeley Data</a>
                 <a class="btn btn-primary btn-sm" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . implode(' AND ', $sinonimoArray) . '" target="_blank">Zenodo</a>
 
                 </small></p>';
             } else {
                 if (isset($sinonimoArray)) {
-                    echo '<small class="text-body-secondary">Pesquisar nas seguintes fontes por sinônimo: 
+                    echo '<small class="text-body-secondary">Pesquisar por termos relacionados: 
                     <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' AND ', $sinonimoArray) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
                     <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' AND ', $sinonimoArray) . '" target="_blank">Pubmed</a> 
                     <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' AND ', $sinonimoArray) . '" target="_blank">Scopus</a>
-                    <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=&quot;' . implode('&quot; AND &quot;', $sinonimoArray) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
+                    <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=' . implode('AND ', $sinonimoArray) . '" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
                     <a class="btn btn-primary btn-sm" href="https://data.mendeley.com/research-data/?search=' . implode(' AND ', $sinonimoArray) . '" target="_blank">Mendeley Data</a>
                     <a class="btn btn-primary btn-sm" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . implode(' AND ', $sinonimoArray) . '" target="_blank">Zenodo</a>
     
@@ -544,7 +476,7 @@ class DadosExternos
                 foreach ($page['langlinks'] as $langlink) {
                     $sinonimoArray[] = $langlink['*'];
                 }
-                echo '<p class="card-text"><b>Consulta por idioma:</b> ' . implode(' OR ', $sinonimoArray) . '</p>';
+                echo '<p class="card-text"><b>Consulta por traduções:</b> ' . implode(' OR ', $sinonimoArray) . '</p>';
                 $sinonimosArray[] =  '(' . implode(' OR ', $sinonimoArray) . ')';
 
                 echo '</div>';
@@ -556,7 +488,7 @@ class DadosExternos
         echo '</div">';
 
 
-        echo '</div><div><p><small class="text-body-secondary">Pesquisar nas seguintes fontes por idioma: 
+        echo '</div><div><p><small class="text-body-secondary">Pesquisar por traduções: 
         <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' OR ', $sinonimosArray) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
         <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' OR ', $sinonimosArray) . '" target="_blank">Pubmed</a> 
         <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' OR ', $sinonimosArray) . '" target="_blank">Scopus</a> 
@@ -618,7 +550,7 @@ class ProcessaRegistros
         echo '<div class="card-body">';
         echo '<h5 class="card-title">' . $record['tree']['self']['term_list']['term'] . '</h5>';
         echo '<p class="card-text"><b>Definição:</b> ' . $record['record_list']['record']['definition']['occ']['@attributes']['n'] . '<br/>';
-        echo '<b>Consulta expandida:</b> ' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '<br/>';
+        echo '<b>Consulta por traduções:</b> ' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '<br/>';
         //echo "<pre>" . print_r($record['record_list']['record']['synonym_list'], true) . "</pre>";
         if (count($record['record_list']['record']['synonym_list']) > 0) {
             if (is_array($record['record_list']['record']['synonym_list']['synonym'])) {
@@ -630,13 +562,13 @@ class ProcessaRegistros
 
         $sinonimo_array[] = $record['tree']['self']['term_list']['term'];
         //echo "<pre>" . print_r($sinonimo_array, true) . "</pre>";
-        echo '<b>Consulta por sinônimos:</b> ' . implode(' OR ', $sinonimo_array) . '</p>';
+        echo '<b>Consulta por termos relacionados:</b> ' . implode(' OR ', $sinonimo_array) . '</p>';
         echo '<p class="card-text"></p>';
-        echo '<p class="card-text"><small class="text-body-secondary">Pesquisar nas seguintes fontes por idioma: 
+        echo '<p class="card-text"><small class="text-body-secondary">Pesquisar por traduções: 
         <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
         <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '" target="_blank">Pubmed</a> 
         <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '" target="_blank">Scopus</a> 
-        <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=&quot;' . implode('&quot; OR &quot;', $record['record_list']['record']['descriptor_list']['descriptor']) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
+        <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
         <a class="btn btn-primary btn-sm" href="https://data.mendeley.com/research-data/?search=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '" target="_blank">Mendeley Data</a>
         <a class="btn btn-primary btn-sm" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '" target="_blank">Zenodo</a>
 
@@ -644,21 +576,21 @@ class ProcessaRegistros
 
         if (count($record['record_list']['record']['synonym_list']) > 0) {
             if (is_array($record['record_list']['record']['synonym_list']['synonym'])) {
-                echo '<small class="text-body-secondary">Pesquisar nas seguintes fontes por sinônimo: 
+                echo '<small class="text-body-secondary">Pesquisar por termos relacionados: 
                 <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' OR ', $sinonimo_array) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
                 <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Pubmed</a> 
                 <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Scopus</a> 
-                <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=&quot;' . implode('&quot; OR &quot;', $sinonimo_array) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
+                <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=' . implode(' OR ', $sinonimo_array) . '" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
                 <a class="btn btn-primary btn-sm" href="https://data.mendeley.com/research-data/?search=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Mendeley Data</a>
                 <a class="btn btn-primary btn-sm" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Zenodo</a>
 
                 </small></p>';
             } else {
-                echo '<small class="text-body-secondary">Pesquisar nas seguintes fontes por sinônimo: 
+                echo '<small class="text-body-secondary">Pesquisar por termos relacionados: 
                 <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' OR ', $sinonimo_array) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
                 <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Pubmed</a> 
                 <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Scopus</a>
-                <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=&quot;' . implode('&quot; OR &quot;', $sinonimo_array) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
+                <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=' . implode(' OR ', $sinonimo_array) . '" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
                 <a class="btn btn-primary btn-sm" href="https://data.mendeley.com/research-data/?search=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Mendeley Data</a>
                 <a class="btn btn-primary btn-sm" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Zenodo</a>
 
@@ -677,7 +609,7 @@ class ProcessaRegistros
         echo '<div class="card-body">';
         echo '<h5 class="card-title">' . $record['tree']['self']['term_list']['term'] . '</h5>';
         echo '<p class="card-text"><b>Definição:</b> ' . $record['record_list']['record']['definition']['occ']['@attributes']['n'] . '<br/>';
-        echo '<b>Consulta expandida:</b> ' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '<br/>';
+        echo '<b>Consulta por traduções:</b> ' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '<br/>';
         //echo "<pre>" . print_r($record['record_list']['record']['synonym_list'], true) . "</pre>";
         if (count($record['record_list']['record']['synonym_list']) > 0) {
             if (is_array($record['record_list']['record']['synonym_list']['synonym'])) {
@@ -689,13 +621,13 @@ class ProcessaRegistros
 
         $sinonimo_array[] = $record['tree']['self']['term_list']['term'];
         //echo "<pre>" . print_r($sinonimo_array, true) . "</pre>";
-        echo '<b>Consulta por sinônimos:</b> ' . implode(' OR ', $sinonimo_array) . '</p>';
+        echo '<b>Consulta por termos relacionados: :</b> ' . implode(' OR ', $sinonimo_array) . '</p>';
         echo '<p class="card-text"></p>';
-        echo '<p class="card-text"><small class="text-body-secondary">Pesquisar nas seguintes fontes por idioma: 
+        echo '<p class="card-text"><small class="text-body-secondary">Pesquisar por traduções: 
         <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
         <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '" target="_blank">Pubmed</a> 
         <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '" target="_blank">Scopus</a> 
-        <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=&quot;' . implode('&quot; OR &quot;', $record['record_list']['record']['descriptor_list']['descriptor']) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
+        <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&q=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
         <a class="btn btn-primary btn-sm" href="https://data.mendeley.com/research-data/?search=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '" target="_blank">Mendeley Data</a>
         <a class="btn btn-primary btn-sm" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . implode(' OR ', $record['record_list']['record']['descriptor_list']['descriptor']) . '" target="_blank">Zenodo</a>
 
@@ -703,21 +635,21 @@ class ProcessaRegistros
 
         if (count($record['record_list']['record']['synonym_list']) > 0) {
             if (is_array($record['record_list']['record']['synonym_list']['synonym'])) {
-                echo '<small class="text-body-secondary">Pesquisar nas seguintes fontes por sinônimo: 
+                echo '<small class="text-body-secondary">Pesquisar por termos relacionados: 
                 <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' OR ', $sinonimo_array) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
                 <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Pubmed</a> 
                 <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Scopus</a> 
-                <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=&quot;' . implode('&quot; OR &quot;', $sinonimo_array) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
+                <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=' . implode(' OR ', $sinonimo_array) . '" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
                 <a class="btn btn-primary btn-sm" href="https://data.mendeley.com/research-data/?search=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Mendeley Data</a>
                 <a class="btn btn-primary btn-sm" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Zenodo</a>
 
                 </small></p>';
             } else {
-                echo '<small class="text-body-secondary">Pesquisar nas seguintes fontes por sinônimo: 
+                echo '<small class="text-body-secondary">Pesquisar por termos relacionados: 
                 <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' OR ', $sinonimo_array) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
                 <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Pubmed</a> 
                 <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Scopus</a>
-                <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=&quot;' . implode('&quot; OR &quot;', $sinonimo_array) . '&quot;" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
+                <a class="btn btn-primary btn-sm" href="https://pesquisa.bvsalud.org/portal/?output=&lang=pt&from=&sort=&format=&count=&fb=&page=1&skfp=&index=mh&search_form_submit=&q=' . implode(' OR ', $sinonimo_array) . '" target="_blank">BVS (Biblioteca Virtual em Saúde)</a> 
                 <a class="btn btn-primary btn-sm" href="https://data.mendeley.com/research-data/?search=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Mendeley Data</a>
                 <a class="btn btn-primary btn-sm" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Zenodo</a>
 
@@ -754,8 +686,8 @@ class ProcessaRegistros
     
                 // Exibe os sinônimos apenas se houver algum
                 if (!empty($sinonimo_array)) {
-                    echo '<p class="card-text"><b>Consulta por idioma:</b> ' . implode(' OR ', $sinonimo_array) . '</p>';
-                    echo '<p><small class="text-body-secondary">Pesquisar nas seguintes fontes por idioma: 
+                    echo '<p class="card-text"><b>Consulta por traduções:</b> ' . implode(' OR ', $sinonimo_array) . '</p>';
+                    echo '<p><small class="text-body-secondary">Pesquisar por traduções: 
                     <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=' . implode(' OR ', $sinonimo_array) . '&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
                     <a class="btn btn-primary btn-sm" href="https://pubmed.ncbi.nlm.nih.gov/?term=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Pubmed</a> 
                     <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Scopus</a> 
@@ -764,7 +696,7 @@ class ProcessaRegistros
                     <a class="btn btn-primary btn-sm" href="https://zenodo.org/search?l=list&p=1&s=10&sort=bestmatch&q=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Zenodo</a>
                     </small></p>';
                 } else {
-                    echo '<p class="card-text"><b>Consulta por idioma:</b> Sem traduções disponíveis.</p>';
+                    echo '<p class="card-text"><b>Consulta por traduções:</b> Sem traduções disponíveis.</p>';
                 }
     
                 echo '</div>';
@@ -784,8 +716,8 @@ class ProcessaRegistros
         foreach ($record['prefLabel'] as $prefLabel) {
             $sinonimo_array[] = $prefLabel['value'];
         }
-        echo '<p class="card-text"><b>Consulta por idioma:</b> ' . implode(' OR ', $sinonimo_array) . '</p>';
-        echo '<p><small class="text-body-secondary">Pesquisar nas seguintes fontes por idioma: 
+        echo '<p class="card-text"><b>Consulta por traduções:</b> ' . implode(' OR ', $sinonimo_array) . '</p>';
+        echo '<p><small class="text-body-secondary">Pesquisar por traduções: 
             <a class="btn btn-primary btn-sm" href="https://search.scielo.org/?q=(' . implode(') OR (', $sinonimo_array) . ')&lang=pt&filter%5Bin%5D%5B%5D=scl" target="_blank">Scielo</a> 
             <a class="btn btn-primary btn-sm" href="https://www.scopus.com/results/results.uri?sort=plf-f&src=s&sot=a&sdt=a&sl=51&origin=searchadvanced&limit=10&s=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Scopus</a> 
             <a class="btn btn-primary btn-sm" href="https://data.mendeley.com/research-data/?search=' . implode(' OR ', $sinonimo_array) . '" target="_blank">Mendeley Data</a>
