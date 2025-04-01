@@ -1,5 +1,5 @@
 /vendor/
-/inc/tests
+/tests/
 /inc/config.php
 /inc/.env
 /pdf_deepseek.php
@@ -11,5 +11,6 @@
 /resultadoMeta.php
 /resultadoDeepSeek.php
 /index2.php
+/gemini.py
 
 
