@@ -1,5 +1,4 @@
 /vendor/
-/tests/
 /inc/config.php
 /inc/.env
 /pdf_deepseek.php
