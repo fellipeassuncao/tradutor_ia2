@@ -39,21 +39,21 @@ Se nenhum modelo estiver disponível, será necessário baixá-los.
 
 ## 2. Download e Execução de Modelos
 
-### 2.1 Baixar e Rodar LLaMA
+### 2.1 Baixar e Executar LLaMA
 
-#### Baixar LLaMA 3.1 (4.9 GB)
+#### 2.1.1 Baixar LLaMA 3.1 (4.9 GB)
 
 ```sh
 ollama pull llama3.1
 ```
 
-#### Baixar LLaMA 3.3 (42 GB) – Requer pelo menos 45,5 GB de RAM
+#### 2.1.2 Baixar LLaMA 3.3 (42 GB) – Requer pelo menos 45,5 GB de RAM
 
 ```sh
 ollama pull llama3.3
 ```
 
-### 2.2 Testar um modelo manualmente via Bash
+#### 2.2 Testar um modelo manualmente via Bash
 
 ```sh
 curl -X POST http://localhost:11434/api/chat \  
@@ -66,21 +66,21 @@ curl -X POST http://localhost:11434/api/chat \
 }'
 ```
 
-## 3. Baixar e Executar DeepSeek-R1 8B
+### 3. Baixar e Executar DeepSeek-R1 8B
 
-### 3.1 Baixar o DeepSeek-R1 8B
+#### 3.1 Baixar o DeepSeek-R1 8B
 
 ```sh
 ollama pull deepseek-r1:8b
 ```
 
-### 3.2 Rodar o modelo
+#### 3.2 Rodar o modelo
 
 ```sh
 ollama run deepseek-r1:8b
 ```
 
-### 3.3 Testar o modelo manualmente via Bash
+#### 3.3 Testar o modelo manualmente via Bash
 
 ```sh
 curl -X POST http://localhost:11434/api/chat \  
