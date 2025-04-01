@@ -66,21 +66,21 @@ curl -X POST http://localhost:11434/api/chat \
 }'
 ```
 
-### 3. Baixar e Executar DeepSeek-R1 8B
+### 2.2 Baixar e Executar DeepSeek-R1 8B
 
-#### 3.1 Baixar o DeepSeek-R1 8B
+#### 2.2.1 Baixar o DeepSeek-R1 8B
 
 ```sh
 ollama pull deepseek-r1:8b
 ```
 
-#### 3.2 Rodar o modelo
+#### 2.2.2 Rodar o modelo
 
 ```sh
 ollama run deepseek-r1:8b
 ```
 
-#### 3.3 Testar o modelo manualmente via Bash
+#### 2.2.3 Testar o modelo manualmente via Bash
 
 ```sh
 curl -X POST http://localhost:11434/api/chat \  
@@ -93,9 +93,9 @@ curl -X POST http://localhost:11434/api/chat \
 }'
 ```
 
-## 4. APIs
+## 3. APIs
 
-### Testar Endpoint do Mesh
+### 3.1 Testar Endpoint do Mesh
 
 ```sh
 curl "https://id.nlm.nih.gov/mesh/lookup/descriptor?label=diabetes&match=exact&lang=pt"
